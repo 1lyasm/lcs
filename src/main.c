@@ -75,6 +75,14 @@ int max(int num1, int num2) {
     }
 }
 
+int max3(int num1, int num2, int num3) {
+    if (num3 > max(num1, num2)) {
+        return num3;
+    } else {
+        return max(num1, num2);
+    }
+}
+
 void fillMtx(Mtx *mtx, Mtx *chosen, char *str1, int len1, char *str2,
              int len2) {
     int i, j;
@@ -82,17 +90,16 @@ void fillMtx(Mtx *mtx, Mtx *chosen, char *str1, int len1, char *str2,
         for (j = 1; j < mtx->m; ++j) {
             if (str1[j - 1] == str2[i - 1]) {
                 mtx->mtx[i][j] = mtx->mtx[i - 1][j - 1] + 1;
-            } else {
-                mtx->mtx[i][j] = max(mtx->mtx[i - 1][j], mtx->mtx[i][j - 1]);
-            }
-            if (mtx->mtx[i][j] > mtx->mtx[i][j - 1] &&
-                mtx->mtx[i][j] > mtx->mtx[i - 1][j] &&
-                mtx->mtx[i][j] > mtx->mtx[i - 1][j - 1]) {
                 chosen->mtx[i][j] = 0;
-            } else if (mtx->mtx[i - 1][j] >= mtx->mtx[i][j - 1]) {
+            } else if (mtx->mtx[i - 1][j] > mtx->mtx[i][j - 1]) {
+                mtx->mtx[i][j] = mtx->mtx[i - 1][j];
                 chosen->mtx[i][j] = 1;
-            } else {
+            } else if (mtx->mtx[i - 1][j] < mtx->mtx[i][j - 1]) {
+                mtx->mtx[i][j] = mtx->mtx[i][j - 1];
                 chosen->mtx[i][j] = 2;
+            } else {
+                mtx->mtx[i][j] = mtx->mtx[i][j - 1];
+                chosen->mtx[i][j] = 3;
             }
         }
         printf("Length matrix after filling row %d:\n\n", i);
@@ -108,16 +115,23 @@ void printLongestLen(Mtx *mtx) {
            mtx->mtx[mtx->n - 1][mtx->m - 1]);
 }
 
-void printResults(Mtx *chosen, char *str1, int len1, char *str2, int len2) {
-    int i;
-    int j;
-    for (i = 0; i < chosen->n; ++i) {
-        for (j = 0; j < chosen->m; ++j) {
-            if (chosen->mtx[i][j] == 0) {
-            } else if (chosen->mtx[i][j] == 1) {
-            } else if (chosen->mtx[i][j] == 2) {
-            }
-        }
+void printLcs(Mtx *chosen, char *str1, int len1, char *str2, int len2, int i,
+              int j, char *lcs, int lcsLen) {
+    // printf("printLcs: called with i: %d, j: %d\n", i, j);
+    if (i == 0 || j == 0) {
+        printf("%s\n", lcs);
+        return;
+    }
+    if (chosen->mtx[i][j] == 0) {
+        lcs[lcsLen - 1] = str1[j - 1];
+        printLcs(chosen, str1, len1, str2, len2, i - 1, j - 1, lcs, lcsLen - 1);
+    } else if (chosen->mtx[i][j] == 1) {
+        printLcs(chosen, str1, len1, str2, len2, i - 1, j, lcs, lcsLen);
+    } else if (chosen->mtx[i][j] == 2) {
+        printLcs(chosen, str1, len1, str2, len2, i, j - 1, lcs, lcsLen);
+    } else {
+        printLcs(chosen, str1, len1, str2, len2, i - 1, j, lcs, lcsLen);
+        printLcs(chosen, str1, len1, str2, len2, i, j - 1, lcs, lcsLen);
     }
 }
 
@@ -130,12 +144,22 @@ int main() {
     int n = len2 + 1;
     Mtx *mtx = makeMtx(n, m);
     Mtx *chosen = makeMtx(n, m);
+    int lcsSize = max(len1, len2) + 1;
+    char *lcs = malloc(sizeof(lcsSize * sizeof(char)));
+    if (lcs == NULL) {
+        fail("main: malloc failed");
+    }
     printf("\nInitial state of matrix: \n\n");
     printMtx(mtx);
     fillMtx(mtx, chosen, str1, len1, str2, len2);
-    printLongestLen(mtx);
+    int longestLen = mtx->mtx[mtx->n - 1][mtx->m - 1];
+    lcs[longestLen] = 0;
+    printf("Length of the longest common subsequence: %d\n\n", longestLen);
     printf("Longest common subsequences: \n\n");
-    printResults(chosen, str1, len1, str2, len2);
+    printLcs(chosen, str1, len1, str2, len2, mtx->n - 1, mtx->m - 1, lcs,
+             longestLen);
+    printf("\n");
+    free(lcs);
     freeMtx(chosen);
     freeMtx(mtx);
     free(str1);
