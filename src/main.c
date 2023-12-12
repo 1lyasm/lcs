@@ -448,17 +448,19 @@ int main() {
         int lcsSize = max(len1, len2) + 1;
         int mHash = compM(lcsSize, 1.0);
         char *lcs = malloc(sizeof(lcsSize * sizeof(char)));
+        int longestLen;
+        HashEntry *hash;
         if (lcs == NULL) {
             fail("main: malloc failed");
         }
-        HashEntry *hash = calloc(mHash, sizeof(HashEntry));
+        hash = calloc(mHash, sizeof(HashEntry));
         if (hash == NULL) {
             fail("main: calloc failed");
         }
         printf("\nInitial state of matrix: \n\n");
         printMtx(mtx);
         fillMtx(mtx, chosen, str1, len1, str2, len2);
-        int longestLen = mtx->mtx[mtx->n - 1][mtx->m - 1];
+        longestLen = mtx->mtx[mtx->n - 1][mtx->m - 1];
         lcs[longestLen] = 0;
         printf("Length of the longest common subsequence: %d\n\n", longestLen);
         printf("Longest common subsequences: \n\n");
