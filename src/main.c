@@ -5,7 +5,6 @@
 #include <string.h>
 
 #define MAX_BUF_LEN 256
-#define N_MODE 2
 #define MAX_LCS_LEN 32
 #define MAX_LCS_BUF_LEN 256
 
@@ -314,14 +313,6 @@ int max(int num1, int num2) {
     }
 }
 
-int max3(int num1, int num2, int num3) {
-    if (num3 > max(num1, num2)) {
-        return num3;
-    } else {
-        return max(num1, num2);
-    }
-}
-
 void fillMtx(Mtx *mtx, Mtx *chosen, char *str1, int len1, char *str2,
              int len2) {
     int i, j;
@@ -347,11 +338,6 @@ void fillMtx(Mtx *mtx, Mtx *chosen, char *str1, int len1, char *str2,
         printMtx(chosen);
         printf("------------------------------------------\n\n");
     }
-}
-
-void printLongestLen(Mtx *mtx) {
-    printf("Length of the longest common subsequence: %d\n\n",
-           mtx->mtx[mtx->n - 1][mtx->m - 1]);
 }
 
 void printLcs(Mtx *chosen, char *str1, int len1, char *str2, int len2, int i,
