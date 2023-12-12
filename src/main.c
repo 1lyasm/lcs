@@ -46,8 +46,6 @@ int checkPrime(int num) {
 
 /*
  @brief Computes m value given n and load
-    based on homework specs
-
  @param n Number of elements
  @param lf Load factor
 
@@ -168,14 +166,9 @@ void freeHash(HashEntry *hash, int m) {
  @brief Adds a str to the hash table
 
  @param hash Hash table
- @param n Number of original elements
  @param m Number of cells in hash table
- @param lf Load factor
- @param str str to be added
+ @param str String to be added
  @param strLen Length of str to be added
- @param shouldPrintHash Flag representing whether hash table should
-    be printed after adding
- @param mode Program running mode
 
  @return Index of the newly added element, -1 if could not add
 */
@@ -214,16 +207,14 @@ int add(HashEntry *hash, int m, char *str, int strLen) {
 }
 
 /*
- @brief Takes a str from stdin and finds it in the
-    hash table if possible
+ @brief Searches a string from hash table
 
  @param hash Hash table
- @param n Number of original elements
  @param m Number of cells in hash table
- @param lf Load factor
- @param mode Program running mode
+ @param str String to be searched
+ @param strLen Length of the string
 
- @return
+ @return 0 if string is not in hash, 1 if string is in hash
 */
 int search(HashEntry *hash, int m, char *str, int strLen) {
     int key;
@@ -253,6 +244,13 @@ int search(HashEntry *hash, int m, char *str, int strLen) {
     return found;
 }
 
+/*
+ @brief Takes a string from stdin by printing a message
+
+ @param msg Message to be printed
+
+ @return Input from stdin
+*/
 char *takeStr(char *msg) {
     char *str = malloc(MAX_BUF_LEN * sizeof(char));
     if (str == NULL) {
@@ -263,6 +261,14 @@ char *takeStr(char *msg) {
     return str;
 }
 
+/*
+ @brief Allocate a zero filled matrix
+
+ @param n Length of string 2
+ @param m Length of string 1
+
+ @return Allocated matrix
+*/
 Mtx *makeMtx(int n, int m) {
     int i;
     Mtx *mtx = calloc(1, sizeof(Mtx));
@@ -284,6 +290,13 @@ Mtx *makeMtx(int n, int m) {
     return mtx;
 }
 
+/*
+ @brief Prints a matrix
+
+ @param mtx Pointer to mtx to be printed
+
+ @return
+*/
 void printMtx(Mtx *mtx) {
     int i;
     int j;
@@ -296,6 +309,13 @@ void printMtx(Mtx *mtx) {
     printf("\n");
 }
 
+/*
+ @brief Frees the matrix
+
+ @param mtx Pointer to mtx to be freed
+
+ @return
+*/
 void freeMtx(Mtx *mtx) {
     int i;
     for (i = 0; i < mtx->n; ++i) {
@@ -305,6 +325,14 @@ void freeMtx(Mtx *mtx) {
     free(mtx);
 }
 
+/*
+ @brief Finds bigger of two values
+
+ @param num1 First number
+ @param num1 Second number
+
+ @return Bigger of values
+*/
 int max(int num1, int num2) {
     if (num1 > num2) {
         return num1;
@@ -313,6 +341,19 @@ int max(int num1, int num2) {
     }
 }
 
+/*
+ @brief Fills the Dynamic Programming table with subsolutions
+
+ @param mtx DP matrix to be filled with solutions
+ @param chosen Matrix that holds whether each character of string 1 and string 2
+ is chosen or passed over
+ @param str1 First string
+ @param len1 Length of first string
+ @param str2 Second string
+ @param len2 Length of second string
+
+ @return
+*/
 void fillMtx(Mtx *mtx, Mtx *chosen, char *str1, int len1, char *str2,
              int len2) {
     int i, j;
@@ -340,6 +381,25 @@ void fillMtx(Mtx *mtx, Mtx *chosen, char *str1, int len1, char *str2,
     }
 }
 
+/*
+ @brief Prints all solutions
+
+ @param chosen Matrix that holds whether each character of string 1 and string 2
+ is chosen or passed over
+ @param str1 First string
+ @param len1 Length of first string
+ @param str2 Second string
+ @param len2 Length of second string
+ @param i Horizontal index
+ @param j Vertical index
+ @param lcs Current solution string
+ @param lcsLen Current length of lcs
+ @param hash Hash that holds solutions
+ @param m Length of hash table
+ @param longestLen Length of the longest solution
+
+ @return
+*/
 void printLcs(Mtx *chosen, char *str1, int len1, char *str2, int len2, int i,
               int j, char *lcs, int lcsLen, HashEntry *hash, int m,
               int longestLen) {
@@ -368,6 +428,12 @@ void printLcs(Mtx *chosen, char *str1, int len1, char *str2, int len2, int i,
     }
 }
 
+/*
+ @brief Main program that gets inputs (string 1 and string 2) from user
+    and runs the algorithm and prints the results
+
+ @return Error code (0 if returned successfully)
+*/
 int main() {
     char resp;
     do {
