@@ -4,6 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+    In this document, there is the solution for the homework 4.
+    This documents implements a DP solution for the LCS problem.
+    Solution finds all of the longest common subsequences from two strings
+    and prints them. User enters two strings as input and program prints
+    all LCSs as output. A hash table add and search function implementations
+    are included to be used in the function that prints LCSs.
+*/
+
 #define MAX_BUF_LEN 256
 #define MAX_LCS_LEN 32
 #define MAX_LCS_BUF_LEN 256
