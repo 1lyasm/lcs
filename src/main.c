@@ -18,6 +18,14 @@ typedef struct {
     int m;
 } Mtx;
 
+/*
+ @brief Prints a message and exits current
+    process with failure error code
+
+ @param msg Message to be printed
+
+ @return
+*/
 void fail(char *msg) {
     printf("%s\n", msg);
     exit(EXIT_FAILURE);
@@ -245,7 +253,7 @@ int search(HashEntry *hash, int m, char *str, int strLen) {
 }
 
 /*
- @brief Takes a string from stdin by printing a message
+ @brief Takes a string from stdin after printing a message
 
  @param msg Message to be printed
 
