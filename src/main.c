@@ -421,6 +421,7 @@ void fillMtx(Mtx *mtx, Mtx *chosen, char *str1, int len1, char *str2,
 void printLcs(Mtx *chosen, char *str1, int len1, char *str2, int len2, int i,
               int j, char *lcs, int lcsLen, HashEntry *hash, int m,
               int longestLen) {
+    int cell = chosen->mtx[i][j];
     if (i == 0 || j == 0) {
         if (search(hash, m, lcs, lcsLen) == 0) {
             printf("%s\n", lcs);
@@ -428,17 +429,17 @@ void printLcs(Mtx *chosen, char *str1, int len1, char *str2, int len2, int i,
         }
         return;
     }
-    if (chosen->mtx[i][j] == CharEqual) {
+    if (cell == CharEqual) {
         lcs[lcsLen - 1] = str1[j - 1];
         printLcs(chosen, str1, len1, str2, len2, i - 1, j - 1, lcs, lcsLen - 1,
                  hash, m, longestLen);
-    } else if (chosen->mtx[i][j] == UpBigger) {
+    } else if (cell == UpBigger) {
         printLcs(chosen, str1, len1, str2, len2, i - 1, j, lcs, lcsLen, hash, m,
                  longestLen);
-    } else if (chosen->mtx[i][j] == LeftBigger) {
+    } else if (cell == LeftBigger) {
         printLcs(chosen, str1, len1, str2, len2, i, j - 1, lcs, lcsLen, hash, m,
                  longestLen);
-    } else {  // chosen->mtx[i][j] == Equal
+    } else if (cell == Equal) {
         printLcs(chosen, str1, len1, str2, len2, i - 1, j, lcs, lcsLen, hash, m,
                  longestLen);
         printLcs(chosen, str1, len1, str2, len2, i, j - 1, lcs, lcsLen, hash, m,
