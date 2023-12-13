@@ -18,6 +18,8 @@ typedef struct {
     int m;
 } Mtx;
 
+typedef enum { CharEqual, UpBigger, LeftBigger, Equal } ChosenState;
+
 /*
  @brief Prints a message and exits current
     process with failure error code
@@ -349,6 +351,14 @@ int max(int num1, int num2) {
     }
 }
 
+void printTables(Mtx *mtx, Mtx *chosen, int i) {
+    printf("Length matrix after filling row %d:\n\n", i);
+    printMtx(mtx);
+    printf("Chosen matrix after filling row %d:\n\n", i);
+    printMtx(chosen);
+    printf("------------------------------------------\n\n");
+}
+
 /*
  @brief Fills the Dynamic Programming table with subsolutions
 
@@ -367,25 +377,25 @@ void fillMtx(Mtx *mtx, Mtx *chosen, char *str1, int len1, char *str2,
     int i, j;
     for (i = 1; i < mtx->n; ++i) {
         for (j = 1; j < mtx->m; ++j) {
+            int up = mtx->mtx[i - 1][j];
+            int left = mtx->mtx[i][j - 1];
+            int upperLeft = mtx->mtx[i - 1][j - 1];
+            int maxNeighbor = max(up, left);
             if (str1[j - 1] == str2[i - 1]) {
-                mtx->mtx[i][j] = mtx->mtx[i - 1][j - 1] + 1;
-                chosen->mtx[i][j] = 0;
-            } else if (mtx->mtx[i - 1][j] > mtx->mtx[i][j - 1]) {
-                mtx->mtx[i][j] = mtx->mtx[i - 1][j];
-                chosen->mtx[i][j] = 1;
-            } else if (mtx->mtx[i - 1][j] < mtx->mtx[i][j - 1]) {
-                mtx->mtx[i][j] = mtx->mtx[i][j - 1];
-                chosen->mtx[i][j] = 2;
+                mtx->mtx[i][j] = upperLeft + 1;
+                chosen->mtx[i][j] = CharEqual;
             } else {
-                mtx->mtx[i][j] = mtx->mtx[i][j - 1];
-                chosen->mtx[i][j] = 3;
+                mtx->mtx[i][j] = maxNeighbor;
+                if (up > left) {
+                    chosen->mtx[i][j] = UpBigger;
+                } else if (up < left) {
+                    chosen->mtx[i][j] = LeftBigger;
+                } else if (up == left) {
+                    chosen->mtx[i][j] = Equal;
+                }
             }
         }
-        printf("Length matrix after filling row %d:\n\n", i);
-        printMtx(mtx);
-        printf("Chosen matrix after filling row %d:\n\n", i);
-        printMtx(chosen);
-        printf("------------------------------------------\n\n");
+        printTables(mtx, chosen, i);
     }
 }
 
@@ -418,17 +428,17 @@ void printLcs(Mtx *chosen, char *str1, int len1, char *str2, int len2, int i,
         }
         return;
     }
-    if (chosen->mtx[i][j] == 0) {
+    if (chosen->mtx[i][j] == CharEqual) {
         lcs[lcsLen - 1] = str1[j - 1];
         printLcs(chosen, str1, len1, str2, len2, i - 1, j - 1, lcs, lcsLen - 1,
                  hash, m, longestLen);
-    } else if (chosen->mtx[i][j] == 1) {
+    } else if (chosen->mtx[i][j] == UpBigger) {
         printLcs(chosen, str1, len1, str2, len2, i - 1, j, lcs, lcsLen, hash, m,
                  longestLen);
-    } else if (chosen->mtx[i][j] == 2) {
+    } else if (chosen->mtx[i][j] == LeftBigger) {
         printLcs(chosen, str1, len1, str2, len2, i, j - 1, lcs, lcsLen, hash, m,
                  longestLen);
-    } else {
+    } else {  // chosen->mtx[i][j] == Equal
         printLcs(chosen, str1, len1, str2, len2, i - 1, j, lcs, lcsLen, hash, m,
                  longestLen);
         printLcs(chosen, str1, len1, str2, len2, i, j - 1, lcs, lcsLen, hash, m,
